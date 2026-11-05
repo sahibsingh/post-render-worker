@@ -1,0 +1,30 @@
+{
+  "name": "postora-render-worker",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Renders Postora motion videos (Remotion, GSAP, Three.js) from a Supabase job queue.",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "worker": "node worker/run.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@react-three/fiber": "9.0.0",
+    "@remotion/bundler": "4.0.355",
+    "@remotion/cli": "4.0.355",
+    "@remotion/player": "4.0.355",
+    "@remotion/renderer": "4.0.355",
+    "@remotion/three": "4.0.355",
+    "@supabase/supabase-js": "2.56.0",
+    "gsap": "3.13.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "remotion": "4.0.355",
+    "three": "0.170.0",
+    "use-sync-external-store": "1.4.0"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  }
+}
