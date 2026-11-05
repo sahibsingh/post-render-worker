@@ -18,7 +18,7 @@ Add these repository **Actions secrets** (Settings, Secrets and variables, Actio
 - `SUPABASE_STORAGE_BUCKET` (the app's bucket name)
 
 In the app's hosting environment add:
-- `RENDER_WORKER_REPO` = `owner/postora-render-worker`
+- `RENDER_WORKER_REPO` = `owner/post-render-worker`
 - `RENDER_DISPATCH_TOKEN` = a fine-grained personal access token limited to this one repository with **Actions: read and write**
 
 Without those two the app keeps its older subtitle templates and nothing here runs.

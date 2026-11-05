@@ -1,5 +1,5 @@
 {
-  "name": "postora-render-worker",
+  "name": "post-render-worker",
   "private": true,
   "version": "0.1.0",
   "description": "Renders Postora motion videos (Remotion, GSAP, Three.js) from a Supabase job queue.",
