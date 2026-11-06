@@ -1,3 +1,5 @@
+import { cleanVoiceText } from "./voice.mjs";
+
 /**
  * A job's payload comes from a database row, and this repository is public, so everything is checked before it reaches the
  * renderer: only known compositions, only text of a sane length, and only images and audio from hosts we expect.
@@ -30,6 +32,7 @@ export function cleanPayload(composition, payload) {
       photos: (Array.isArray(p.photos) ? p.photos : []).map(safeUrl).filter(Boolean).slice(0, 4),
       audioUrl: p.audioUrl ? safeUrl(p.audioUrl) : null,
     },
+    voiceText: cleanVoiceText(p.voiceText),
     webgl: WEBGL.has(composition),
   };
 }

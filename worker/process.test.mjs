@@ -58,3 +58,28 @@ test("the payload is cleaned: unknown compositions refused, hosts limited to htt
   assert.equal(inputProps.audioUrl, null);
   assert.equal(cleanPayload("Plates", good).webgl, true);
 });
+
+import { cleanVoiceText, mixArgs, tempoFor } from "./voice.mjs";
+
+test("voice text keeps Devanagari and plain punctuation only, and needs enough of it", () => {
+  assert.equal(cleanVoiceText("दिवाली की मिठाई से मोटे नहीं होते। <script>alert(1)</script> fit रहो"), "दिवाली की मिठाई से मोटे नहीं होते। 1 रहो");
+  assert.equal(cleanVoiceText("hello world only"), null);
+  assert.equal(cleanVoiceText(42), null);
+  assert.ok(cleanVoiceText("क".repeat(2000)).length <= 700);
+});
+
+test("the voice is sped up only when it would run past the video, never beyond 1.3x", () => {
+  assert.equal(tempoFor(12), 1);
+  assert.ok(Math.abs(tempoFor(27.6) - 1.2) < 1e-9);
+  assert.equal(tempoFor(60), 1.3);
+});
+
+test("the mix lowers the music when there is some and pads the voice when there is none", () => {
+  const withMusic = mixArgs({ video: "a.mp4", voice: "v.wav", output: "o.mp4", hasMusic: true, tempo: 1, seconds: "25.00" }).join(" ");
+  assert.match(withMusic, /volume=0\.3/);
+  assert.match(withMusic, /amix=inputs=2/);
+  const silent = mixArgs({ video: "a.mp4", voice: "v.wav", output: "o.mp4", hasMusic: false, tempo: 1.1, seconds: "25.00" }).join(" ");
+  assert.doesNotMatch(silent, /amix/);
+  assert.match(silent, /apad/);
+  assert.match(silent, /-t 25\.00/);
+});

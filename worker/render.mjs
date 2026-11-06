@@ -3,12 +3,13 @@ import path from "node:path";
 import { bundle } from "@remotion/bundler";
 import { renderMedia, selectComposition } from "@remotion/renderer";
 import { cleanPayload } from "./payload.mjs";
+import { addVoice } from "./voice.mjs";
 
 let serveUrl;
 
 /** Draws one job to an MP4 in a temp folder. The bundle is built once and reused for every job in this run. */
 export async function renderJob(job) {
-  const { inputProps, webgl } = cleanPayload(job.composition, job.payload);
+  const { inputProps, webgl, voiceText } = cleanPayload(job.composition, job.payload);
   serveUrl ??= await bundle({ entryPoint: path.resolve("src/index.ts") });
   const chromiumOptions = webgl ? { gl: "swangle" } : {};
   const browserExecutable = process.env.BROWSER_EXECUTABLE || null;
@@ -21,5 +22,6 @@ export async function renderJob(job) {
     scale: Number(process.env.RENDER_SCALE || 2 / 3), concurrency: process.env.RENDER_CONCURRENCY ? Number(process.env.RENDER_CONCURRENCY) : null,
     browserExecutable, chromiumOptions, chromeMode, timeoutInMilliseconds: 180_000, logLevel: "error",
   });
-  return { path: output, seconds: composition.durationInFrames / composition.fps };
+  const finished = await addVoice(output, voiceText, (message) => console.log(`job ${job.id} ${message}`));
+  return { path: finished, seconds: composition.durationInFrames / composition.fps };
 }

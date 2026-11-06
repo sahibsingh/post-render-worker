@@ -52,6 +52,21 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq libnss3 libdbus-1-3 libatk1.0-0 libasound2t64 libxrandr2 libxkbcommon-dev libxfixes3 libxcomposite1 libxdamage1 libgbm-dev libatk-bridge2.0-0 libcups2
           npx remotion browser ensure
+      - name: Install the voice program
+        if: steps.queue.outputs.work == 'yes'
+        run: |
+          pip install --quiet piper-tts==1.8.0
+          echo "PIPER_MODEL=$HOME/voices/hi_IN-pratham-medium.onnx" >> "$GITHUB_ENV"
+      - name: Remember the voice file
+        id: voice
+        if: steps.queue.outputs.work == 'yes'
+        uses: actions/cache@v4
+        with:
+          path: ~/voices
+          key: piper-hi_IN-pratham-medium-v1
+      - name: Download the voice file
+        if: steps.queue.outputs.work == 'yes' && steps.voice.outputs.cache-hit != 'true'
+        run: python3 -m piper.download_voices --download-dir "$HOME/voices" hi_IN-pratham-medium
       - name: Render
         if: steps.queue.outputs.work == 'yes'
         env:
