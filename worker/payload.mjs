@@ -4,7 +4,7 @@ import { cleanSegments } from "./voice.mjs";
  * A job's payload comes from a database row, and this repository is public, so everything is checked before it reaches the
  * renderer: only known compositions, only text of a sane length, and only images and audio from hosts we expect.
  */
-export const COMPOSITIONS = new Set(["Pulse", "Arch", "Plates", "Ticker", "Stack"]);
+export const COMPOSITIONS = new Set(["Pulse", "Arch", "Plates", "Ticker", "Stack", "Tag", "Countdown", "Blueprint"]);
 const WEBGL = new Set(["Plates"]);
 const HOSTS = [/^images\.pexels\.com$/, /^images\.unsplash\.com$/, /^[a-z0-9-]+\.supabase\.co$/];
 
