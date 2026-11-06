@@ -6,11 +6,11 @@ import { colours, type TemplateProps } from "../types";
 const ease = (t: number) => 1 - (1 - Math.min(1, Math.max(0, t))) ** 4;
 
 /** Weight plates slide onto a bar, one per point, under a slowly moving camera. Real lighting and depth, drawn with Three.js. */
-export function Plates({ script, palette }: TemplateProps) {
+export function Plates({ script, palette, timing }: TemplateProps) {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
   const t = frame / fps;
-  const clock = planClock(script);
+  const clock = planClock(script, timing);
   const { paper, ink, accent } = colours(palette);
   const n = clock.n;
   const orbit = Math.sin(t * 0.35) * 0.55;

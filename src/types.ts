@@ -6,7 +6,8 @@ export type Script = {
   closing: { handle: string; line: string };
 };
 export type Palette = { bg: string; fg: string; accent: string; mute: string; card: string; onAccent: string };
-export type TemplateProps = { script: Script; palette: Palette; photos: string[]; audioUrl?: string | null };
+import type { Timing } from "./clock";
+export type TemplateProps = { script: Script; palette: Palette; photos: string[]; audioUrl?: string | null; /** Scene lengths timed to the voice; without it the default timing is used. */ timing?: Timing | null };
 
 export const SAMPLE_SCRIPT: Script = {
   title: "Cravings ko control karo.",

@@ -4,6 +4,8 @@ import { loadFonts } from "./fonts";
 import { Arch } from "./templates/Arch";
 import { Plates } from "./templates/Plates";
 import { Pulse } from "./templates/Pulse";
+import { Stack } from "./templates/Stack";
+import { Ticker } from "./templates/Ticker";
 import { PALETTES, SAMPLE_BOUTIQUE, SAMPLE_SCRIPT, type TemplateProps } from "./types";
 
 loadFonts();
@@ -25,6 +27,8 @@ export const Root = () => (
   <>
     <Composition id="Pulse" component={withAudio(Pulse)} {...base} defaultProps={props()} />
     <Composition id="Arch" component={withAudio(Arch)} {...base} defaultProps={props({ script: SAMPLE_BOUTIQUE, palette: PALETTES.thali, photos: ["photos/p28512787.jpg", "photos/p35521738.jpg", "photos/p39287929.jpg"] })} />
+    <Composition id="Ticker" component={withAudio(Ticker)} {...base} defaultProps={props({ palette: PALETTES.masala })} />
+    <Composition id="Stack" component={withAudio(Stack)} {...base} defaultProps={props({ script: SAMPLE_BOUTIQUE, palette: PALETTES.thali })} />
     <Composition id="Plates" component={withAudio(Plates)} {...base} defaultProps={props()} />
   </>
 );

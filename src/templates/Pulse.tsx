@@ -22,8 +22,8 @@ function trace(spikes: Array<{ t: number; big: number }>, total: number) {
   return { d, pts, cum, len };
 }
 
-export function Pulse({ script, palette }: TemplateProps) {
-  const clock = planClock(script);
+export function Pulse({ script, palette, timing }: TemplateProps) {
+  const clock = planClock(script, timing);
   const { paper, ink, accent, onAccent } = colours(palette);
   const spikes = [{ t: 0.55, big: 0.7 }, ...clock.starts.map((t) => ({ t: t + 0.18, big: 1 })), { t: clock.closeAt + 0.55, big: 1.25 }];
   const ecg = trace(spikes, clock.total);

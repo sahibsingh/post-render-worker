@@ -18,8 +18,8 @@ function jaali(w: number, h: number, r: number) {
   return parts.join(" ");
 }
 
-export function Arch({ script, palette, photos }: TemplateProps) {
-  const clock = planClock(script);
+export function Arch({ script, palette, photos, timing }: TemplateProps) {
+  const clock = planClock(script, timing);
   const { paper, ink, accent, onAccent } = colours(palette);
   const body = "Manrope, system-ui, sans-serif";
   const serif = "'Playfair Display', Georgia, serif";

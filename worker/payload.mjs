@@ -1,10 +1,10 @@
-import { cleanVoiceText } from "./voice.mjs";
+import { cleanSegments } from "./voice.mjs";
 
 /**
  * A job's payload comes from a database row, and this repository is public, so everything is checked before it reaches the
  * renderer: only known compositions, only text of a sane length, and only images and audio from hosts we expect.
  */
-export const COMPOSITIONS = new Set(["Pulse", "Arch", "Plates"]);
+export const COMPOSITIONS = new Set(["Pulse", "Arch", "Plates", "Ticker", "Stack"]);
 const WEBGL = new Set(["Plates"]);
 const HOSTS = [/^images\.pexels\.com$/, /^images\.unsplash\.com$/, /^[a-z0-9-]+\.supabase\.co$/];
 
@@ -32,7 +32,7 @@ export function cleanPayload(composition, payload) {
       photos: (Array.isArray(p.photos) ? p.photos : []).map(safeUrl).filter(Boolean).slice(0, 4),
       audioUrl: p.audioUrl ? safeUrl(p.audioUrl) : null,
     },
-    voiceText: cleanVoiceText(p.voiceText),
+    voiceSegments: cleanSegments(p.voiceSegments),
     webgl: WEBGL.has(composition),
   };
 }

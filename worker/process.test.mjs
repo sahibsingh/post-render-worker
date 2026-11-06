@@ -59,27 +59,52 @@ test("the payload is cleaned: unknown compositions refused, hosts limited to htt
   assert.equal(cleanPayload("Plates", good).webgl, true);
 });
 
-import { cleanVoiceText, mixArgs, tempoFor } from "./voice.mjs";
+import { beatCountFor, cleanSegments, cleanVoiceText, fitTiming, mixArgs, planTiming, stretchFor } from "./voice.mjs";
 
 test("voice text keeps Devanagari and plain punctuation only, and needs enough of it", () => {
   assert.equal(cleanVoiceText("दिवाली की मिठाई से मोटे नहीं होते। <script>alert(1)</script> fit रहो"), "दिवाली की मिठाई से मोटे नहीं होते। 1 रहो");
   assert.equal(cleanVoiceText("hello world only"), null);
   assert.equal(cleanVoiceText(42), null);
-  assert.ok(cleanVoiceText("क".repeat(2000)).length <= 700);
+  assert.deepEqual(cleanSegments(["दिवाली की मिठाई", "english only", null]), ["दिवाली की मिठाई", null, null]);
+  assert.equal(cleanSegments("not a list").length, 0);
 });
 
-test("the voice is sped up only when it would run past the video, never beyond 1.3x", () => {
-  assert.equal(tempoFor(12), 1);
-  assert.ok(Math.abs(tempoFor(27.6) - 1.2) < 1e-9);
-  assert.equal(tempoFor(60), 1.3);
+test("scene lengths follow the voice and always add up to 25 seconds", () => {
+  const sum = (t) => t.open + t.holds.reduce((a, b) => a + b, 0) + t.close;
+  // short lines: the minimum scene lengths apply, and the leftover time is shared by the points
+  const short = fitTiming([2, 3, 3, 3, 3, 2], false);
+  assert.ok(Math.abs(sum(short.timing) - 25) < 1e-6);
+  assert.equal(short.tempo, 1);
+  assert.ok(short.timing.holds.every((h) => h >= 3.2));
+  // long lines: the voice is sped up, never beyond 1.3x
+  const long = fitTiming([5, 8, 8, 8, 8, 5], false);
+  assert.ok(long.tempo > 1 && long.tempo <= 1.3 + 1e-9);
+  assert.ok(sum(long.timing) <= 25 + 1e-6);
+  // scene starts are consecutive
+  assert.equal(long.starts[0], 0);
+  assert.ok(Math.abs(long.starts[1] - long.timing.open) < 1e-9);
 });
 
-test("the mix lowers the music when there is some and pads the voice when there is none", () => {
-  const withMusic = mixArgs({ video: "a.mp4", voice: "v.wav", output: "o.mp4", hasMusic: true, tempo: 1, seconds: "25.00" }).join(" ");
+test("a short voice is slowed to fill the video, a long one is not", () => {
+  assert.ok(stretchFor([2, 3, 3, 3, 3, 2], false) > 1.05);
+  assert.equal(stretchFor([6, 9, 9, 9, 9, 6], false), 1);
+  assert.equal(planTiming([3, 3, 3, 3], true).open, 4.6);
+});
+
+test("the number of points follows the same rule as the compositions", () => {
+  assert.equal(beatCountFor({ beats: [1, 2, 3, 4, 5, 6], stat: null }), 5);
+  assert.equal(beatCountFor({ beats: [1, 2, 3, 4], stat: { to: 1 } }), 4);
+  assert.equal(beatCountFor({ beats: [1, 2, 3], stat: null }), 3);
+});
+
+test("the mix places each line at its scene start and lowers the music when there is some", () => {
+  const voices = [{ file: "a.wav", start: 0.35 }, { file: "b.wav", start: 4.85 }];
+  const withMusic = mixArgs({ video: "v.mp4", voices, output: "o.mp4", hasMusic: true, tempo: 1.1, seconds: "25.00" }).join(" ");
+  assert.match(withMusic, /adelay=4850\|4850/);
   assert.match(withMusic, /volume=0\.3/);
-  assert.match(withMusic, /amix=inputs=2/);
-  const silent = mixArgs({ video: "a.mp4", voice: "v.wav", output: "o.mp4", hasMusic: false, tempo: 1.1, seconds: "25.00" }).join(" ");
-  assert.doesNotMatch(silent, /amix/);
+  assert.match(withMusic, /amix=inputs=3:duration=first/);
+  const silent = mixArgs({ video: "v.mp4", voices, output: "o.mp4", hasMusic: false, tempo: 1, seconds: "25.00" }).join(" ");
+  assert.match(silent, /amix=inputs=2:duration=longest/);
   assert.match(silent, /apad/);
   assert.match(silent, /-t 25\.00/);
 });
