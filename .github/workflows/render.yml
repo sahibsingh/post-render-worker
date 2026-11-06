@@ -50,7 +50,7 @@ jobs:
         if: steps.queue.outputs.work == 'yes'
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq libnss3 libdbus-1-3 libatk1.0-0 libasound2t64 libxrandr2 libxkbcommon-dev libxfixes3 libxcomposite1 libxdamage1 libgbm-dev libatk-bridge2.0-0 libcups2
+          sudo apt-get install -y -qq libnss3 libdbus-1-3 libatk1.0-0 libasound2t64 libxrandr2 libxkbcommon-dev libxfixes3 libxcomposite1 libxdamage1 libgbm-dev libatk-bridge2.0-0 libcups2 ffmpeg
           npx remotion browser ensure
       - name: Install the voice program
         if: steps.queue.outputs.work == 'yes'

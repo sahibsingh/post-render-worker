@@ -10,7 +10,7 @@ const MAX_TEMPO = 1.3;
 const VOICE_START_MS = 500;
 
 const run = (file, args, input) => new Promise((resolve, reject) => {
-  const child = execFile(file, args, { timeout: 180_000, maxBuffer: 4 * 1024 * 1024 }, (error, stdout) => (error ? reject(new Error(`${path.basename(file)} failed`)) : resolve(String(stdout))));
+  const child = execFile(file, args, { timeout: 180_000, maxBuffer: 4 * 1024 * 1024 }, (error, stdout, stderr) => (error ? reject(new Error(`${path.basename(file)} failed: ${error.code === "ENOENT" ? "not installed" : String(stderr || error.message).replace(/\s+/g, " ").slice(0, 160)}`)) : resolve(String(stdout))));
   if (input !== undefined) child.stdin.end(input);
 });
 
